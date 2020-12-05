@@ -1,6 +1,6 @@
 import Foundation
 
-let input = readInput()
+let input = readLines()
 let seatIds = input.map(seatId).sorted()
 
 // part 1
