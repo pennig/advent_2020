@@ -16,8 +16,6 @@ extension Rules {
 
 typealias Bag = Dictionary<String, Int>
 extension Bag {
-    var colorsInside: Set<String> { Set(keys) }
-    
     init(_ contains: String) {
         self.init()
         guard contains != "no other bags." else { return }
@@ -28,45 +26,19 @@ extension Bag {
     }
 }
 
-
 func colorsContainingColor(_ color: String) -> Set<String> {
-    // So we don't have to visit the same color multiple times
-    var colorCache = [String: Set<String>]()
-    
-    func colorsInBagColor(_ bagColor: String, containing color: String) -> Set<String> {
-        if let cache = colorCache[bagColor] {
-            return cache
+    rules.reduce(into: Set<String>()) { out, rule in
+        if rule.value.keys.contains(color) {
+            out.insert(rule.key)
+            out.formUnion(colorsContainingColor(rule.key))
         }
-        
-        var output = Set<String>()
-        
-        let colorsInside = rules[bagColor]!.colorsInside
-        if colorsInside.contains(color) {
-            output.insert(bagColor)
-        }
-        colorsInside.forEach {
-            let foundColors = colorsInBagColor($0, containing: color)
-            if !foundColors.isEmpty {
-                output.formUnion(foundColors)
-                output.insert(bagColor)
-            }
-        }
-        colorCache[bagColor] = output
-        
-        return output
-    }
-    
-    return rules.keys.reduce(into: Set<String>()) { out, key in
-        out.formUnion(colorsInBagColor(key, containing: color))
     }
 }
 
 func bagsInsideBagColor(_ color: String) -> Int {
-    var count = 0
-    for (c, num) in rules[color]! {
-        count += num + num * bagsInsideBagColor(c)
-    }
-    return count
+    rules[color]?.reduce(into: 0, { total, bag in
+        total += bag.value + bag.value * bagsInsideBagColor(bag.key)
+    }) ?? 0
 }
 
 print(colorsContainingColor("shiny gold").count)
