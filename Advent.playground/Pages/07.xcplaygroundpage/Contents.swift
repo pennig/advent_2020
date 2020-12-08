@@ -36,9 +36,7 @@ func colorsContainingColor(_ color: String) -> Set<String> {
 }
 
 func bagsInsideBagColor(_ color: String) -> Int {
-    rules[color]?.reduce(into: 0, { total, bag in
-        total += bag.value + bag.value * bagsInsideBagColor(bag.key)
-    }) ?? 0
+    rules[color]?.reduce(0) { $0 + $1.value * (1 + bagsInsideBagColor($1.key)) } ?? 0
 }
 
 print(colorsContainingColor("shiny gold").count)
