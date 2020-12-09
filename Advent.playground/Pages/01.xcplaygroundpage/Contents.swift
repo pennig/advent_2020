@@ -8,6 +8,10 @@ let target = 2020
 
 // part 1
 let twoDigitProduct = twoDigitCalculation()
+if let factors = ints.twoElementsAddingTo(target) {
+    let twoDigitProduct2 = factors.0 * factors.1
+    print(twoDigitProduct2)
+}
 
 // part 2
 let threeDigitProduct = threeDigitCalculation()
@@ -46,3 +50,21 @@ func threeDigitCalculation() -> Int {
     return -1
 }
 
+extension Sequence where Element == Int {
+    func twoElementsAddingTo(_ target: Element) -> (Element, Element)? {
+        let sorted = self.sorted()
+        var start = sorted.startIndex
+        var end = sorted.endIndex.advanced(by: -1)
+        while start != end {
+            let sum = sorted[start] + sorted[end]
+            if sum == target {
+                return (sorted[start], sorted[end])
+            } else if sum > target {
+                end = end.advanced(by: -1)
+            } else {
+                start = start.advanced(by: 1)
+            }
+        }
+        return nil
+    }
+}
